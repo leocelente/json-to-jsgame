@@ -1,0 +1,107 @@
+<textarea name="json" id="json" rows="8" cols="80">[
+    {"id":0, "img":"mv0.png", "left":"-1", "right":"1", "front":"0"},
+    {"id":"1", "img":"mv1.png", "left":"0", "right":"X", "front":"1"},
+    {"id":"X", "img":"mvX.png", "left":"1", "right":"-1", "front":"X"},
+    {"id":"-1", "img":"mv-1.png", "left":"X", "right":"0", "front":"-1"}
+]</textarea>
+<br>
+<button type="button" name="button" onclick="view.build()">Build</button>
+<hr>
+<map name="map">
+    <area shape="rect" id="left" coords="0,0,175,600" href="#" alt="">
+    <area shape="rect" id="front" coords="175,0,625,600" href="#" alt="">
+    <area shape="rect" id="right" coords="625,0,800,600" href="#" alt="">
+</map>
+<img id='i' src="" width="800" height="600" alt="" usemap="#map">
+
+
+<script type="text/javascript">
+    var model = {
+        data: [],
+        currentStateId: '0'
+    };
+
+    var oct = {
+        getData: function () {
+            return model.data;
+        },
+        setData: function (data) {
+            model.data = data;
+        },
+        getCurrentStateId: function () {
+            return model.currentStateId;
+        },
+        goto: function(id) {
+            var img = document.getElementById('i');
+            var state = this.getStateById(id);
+            console.log("To State: ", state);
+            img.src = state.img;
+            model.currentStateId = id;
+            console.log("Current State", oct.getCurrentStateId());
+        },
+        getStateById: function (id) {
+            var states = this.getData();
+            var out;
+            states.forEach(function(state) {
+                if (state.id == id) {
+                    out = state;
+                }
+            });
+            return out;
+        }
+    };
+
+    var view = {
+        goLeft: function () {
+            console.log("Going Left");
+            var currentStateId = oct.getCurrentStateId();
+            oct.goto(oct.getStateById(currentStateId).left);
+        },
+        goRight: function () {
+            console.log("Going Right");
+            var currentStateId = oct.getCurrentStateId();
+            oct.goto(oct.getStateById(currentStateId).right);
+        },
+        goFront: function () {
+            console.log("Going Front");
+            var currentStateId = oct.getCurrentStateId();
+            oct.goto(oct.getStateById(currentStateId).front);
+        },
+        init: function () {
+            oct.goto('0');
+        },
+        build: function () {
+            model.data = JSON.parse(document.getElementById('json').value);
+            this.init();
+        }
+    };
+
+    // Areas de Mapas não podem ter o atributo 'onclick'
+    // é preciso adicionar um eventListener com 'preventDefault'
+    // para que o click seja direcionado para uma função js
+    var leftArea = document.getElementById('left');
+    var frontArea = document.getElementById('front');
+    var rightArea = document.getElementById('right');
+
+    leftArea.addEventListener('click', function(e) {
+        e.preventDefault();
+        view.goLeft();
+    });
+    frontArea.addEventListener('click', function(e) {
+        e.preventDefault();
+        view.goFront();
+    });
+    rightArea.addEventListener('click', function(e) {
+        e.preventDefault();
+        view.goRight();
+    });
+
+</script>
+<!--
+[
+    {"id":0, "img":"mv0.png", "left":"-1", "right":"1", "front":"0"},
+    {"id":"1", "img":"mv1.png", "left":"0", "right":"X", "front":"1"},
+    {"id":"X", "img":"mvX.png", "left":"1", "right":"-1", "front":"X"},
+    {"id":"-1", "img":"mv-1.png", "left":"X", "right":"0", "front":"-1"}
+]
+ -->
